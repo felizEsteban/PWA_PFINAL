@@ -1,16 +1,28 @@
-# React + Vite
+EcoPantry – Gestor de Inventario Inteligente
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+EcoPantry es una Aplicación Web Progresiva (PWA) diseñada para reducir el desperdicio de alimentos en el hogar. Permite gestionar la despensa, nevera y congelador, mostrar alertas de caducidad y generar listas de compras automáticamente.
 
-Currently, two official plugins are available:
+Características principales
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Gestión de inventario por áreas: Despensa, Nevera y Congelador.
 
-## React Compiler
+Indicadores visuales de estado de caducidad: Fresco, Consumir pronto y Caducado.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Lista de compras integrada.
 
-## Expanding the ESLint configuration
+Soporte PWA con funcionamiento offline.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Sincronización en la nube mediante Firebase.
+
+Notificaciones hápticas en dispositivos compatibles.
+
+Stack tecnológico
+
+Frontend: React + Vite
+
+Estilos: Tailwind CSS
+
+Backend / Base de datos: Firebase (Auth y Firestore)
+
+PWA: Vite PWA Plugin
+
