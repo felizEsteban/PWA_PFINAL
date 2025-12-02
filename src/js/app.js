@@ -581,7 +581,7 @@ async function handleEnableNotifications() {
         // Actualizar botón
         const btn = document.getElementById('btn-enable-notifications');
         if (btn) {
-            btn.textContent = '✅ Alertas activas';
+            btn.textContent = 'Alertas activas';
             btn.disabled = true;
         }
     } else if (permission === 'denied') {
