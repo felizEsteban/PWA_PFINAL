@@ -1,0 +1,86 @@
+/* ===========================================
+   VARIABLES CSS - Tokens de diseño
+   =========================================== */
+
+:root {
+    /* --- Colores principales --- */
+    --color-primary: #2E7D32;           /* Verde principal */
+    --color-primary-light: #4CAF50;
+    --color-primary-dark: #1B5E20;
+    
+    --color-secondary: #FF9800;          /* Naranja para alertas */
+    --color-secondary-light: #FFB74D;
+    
+    /* --- Colores de estado --- */
+    --color-success: #4CAF50;
+    --color-warning: #FF9800;
+    --color-danger: #F44336;
+    --color-info: #2196F3;
+    
+    /* --- Colores de fondo --- */
+    --bg-primary: #F5F5F5;
+    --bg-secondary: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-modal: rgba(0, 0, 0, 0.5);
+    
+    /* --- Colores de texto --- */
+    --text-primary: #212121;
+    --text-secondary: #757575;
+    --text-light: #FFFFFF;
+    --text-muted: #9E9E9E;
+    
+    /* --- Bordes --- */
+    --border-color: #E0E0E0;
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 16px;
+    --border-radius-full: 50%;
+    
+    /* --- Sombras --- */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.19);
+    
+    /* --- Espaciado (sistema de 4px) --- */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+    
+    /* --- Tipografía --- */
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    --font-size-xs: 0.75rem;    /* 12px */
+    --font-size-sm: 0.875rem;   /* 14px */
+    --font-size-base: 1rem;     /* 16px */
+    --font-size-lg: 1.125rem;   /* 18px */
+    --font-size-xl: 1.25rem;    /* 20px */
+    --font-size-2xl: 1.5rem;    /* 24px */
+    
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+    
+    --line-height-tight: 1.25;
+    --line-height-normal: 1.5;
+    
+    /* --- Transiciones --- */
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow: 350ms ease;
+    
+    /* --- Z-index (capas) --- */
+    --z-base: 1;
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-modal: 300;
+    --z-toast: 400;
+    --z-loading: 500;
+    
+    /* --- Tamaños fijos --- */
+    --header-height: 60px;
+    --nav-height: 56px;
+    --max-width: 600px;
+}
+

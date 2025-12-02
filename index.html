@@ -1,13 +1,284 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pwa_pfinal</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Metadatos básicos -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO -->
+    <title>Gestor de Despensa - Control de Inventario y Caducidad</title>
+    <meta name="description" content="Aplicación para gestionar tu despensa, lista de compras e inventario. Controla las fechas de caducidad y recibe alertas.">
+    <meta name="keywords" content="despensa, inventario, lista compras, caducidad, gestión hogar">
+    <meta name="author" content="Tu Nombre">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph (redes sociales) -->
+    <meta property="og:title" content="Gestor de Despensa">
+    <meta property="og:description" content="Controla tu despensa, lista de compras y fechas de caducidad">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="src/assets/icons/icon-512x512.png">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2E7D32">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Despensa">
+    
+    <!-- Iconos -->
+    <link rel="icon" type="image/png" sizes="32x32" href="src/assets/icons/icon-32x32.png">
+    <link rel="apple-touch-icon" href="src/assets/icons/icon-192x192.png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="src/css/variables.css">
+    <link rel="stylesheet" href="src/css/main.css">
+    <link rel="stylesheet" href="src/css/styles.css">
+    
+    <!-- Precarga de fuentes (rendimiento) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <!-- Pantalla de carga inicial -->
+    <div id="loading-screen" class="loading-screen" aria-label="Cargando aplicación">
+        <div class="spinner"></div>
+        <p>Cargando Gestor de Despensa...</p>
+    </div>
+
+    <!-- Contenedor principal de la app -->
+    <div id="app" class="app-container" role="main">
+        
+        <!-- Header -->
+        <header class="header" role="banner">
+            <h1 class="header__title">🏠 Mi Despensa</h1>
+            <button id="btn-install" class="btn-install" aria-label="Instalar aplicación" hidden>
+                Instalar App
+            </button>
+        </header>
+
+        <!-- Navegación por pestañas -->
+        <nav class="nav-tabs" role="tablist" aria-label="Secciones principales">
+            <button class="nav-tab active" data-tab="inventario" role="tab" aria-selected="true">
+                📦 Inventario
+            </button>
+            <button class="nav-tab" data-tab="compras" role="tab" aria-selected="false">
+                🛒 Compras
+            </button>
+            <button class="nav-tab" data-tab="caducidad" role="tab" aria-selected="false">
+                ⏰ Caducidad
+            </button>
+        </nav>
+
+        <!-- Contenido principal -->
+        <main class="main-content">
+            
+            <!-- Sección Inventario -->
+            <section id="inventario" class="tab-content active" role="tabpanel" aria-labelledby="tab-inventario">
+                <div class="section-header">
+                    <h2>Inventario</h2>
+                    <button id="btn-add-product" class="btn-primary" aria-label="Agregar nuevo producto">
+                        + Agregar
+                    </button>
+                </div>
+                
+                <!-- Buscador -->
+                <div class="search-container">
+                    <input 
+                        type="search" 
+                        id="search-inventory" 
+                        class="search-input" 
+                        placeholder="Buscar producto..."
+                        aria-label="Buscar en inventario"
+                    >
+                </div>
+                
+                <!-- Lista de productos -->
+                <div id="inventory-list" class="product-list" role="list">
+                    <!-- Se llena dinámicamente con JS -->
+                </div>
+            </section>
+
+            <!-- Sección Lista de Compras -->
+            <section id="compras" class="tab-content" role="tabpanel" aria-labelledby="tab-compras" hidden>
+                <div class="section-header">
+                    <h2>Lista de Compras</h2>
+                    <button id="btn-add-shopping" class="btn-primary" aria-label="Agregar a lista de compras">
+                        + Agregar
+                    </button>
+                </div>
+                
+                <div id="shopping-list" class="shopping-list" role="list">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                
+                <div class="shopping-actions">
+                    <button id="btn-clear-bought" class="btn-secondary">
+                        Limpiar comprados
+                    </button>
+                </div>
+            </section>
+
+            <!-- Sección Caducidad -->
+            <section id="caducidad" class="tab-content" role="tabpanel" aria-labelledby="tab-caducidad" hidden>
+                <div class="section-header">
+                    <h2>Control de Caducidad</h2>
+                    <button id="btn-enable-notifications" class="btn-secondary" aria-label="Activar notificaciones">
+                        🔔 Activar Alertas
+                    </button>
+                </div>
+                
+                <!-- Filtros de caducidad -->
+                <div class="expiry-filters" role="group" aria-label="Filtrar por estado">
+                    <button class="filter-btn active" data-filter="all">Todos</button>
+                    <button class="filter-btn filter-danger" data-filter="expired">Caducados</button>
+                    <button class="filter-btn filter-warning" data-filter="soon">Próximos 7 días</button>
+                    <button class="filter-btn filter-ok" data-filter="ok">En buen estado</button>
+                </div>
+                
+                <div id="expiry-list" class="product-list" role="list">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Modal para agregar/editar productos -->
+        <dialog id="modal-product" class="modal" aria-labelledby="modal-title">
+            <form id="form-product" class="modal-content">
+                <header class="modal-header">
+                    <h3 id="modal-title">Agregar Producto</h3>
+                    <button type="button" class="btn-close" aria-label="Cerrar modal">&times;</button>
+                </header>
+                
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="product-name">Nombre del producto *</label>
+                        <input 
+                            type="text" 
+                            id="product-name" 
+                            name="name" 
+                            required 
+                            autocomplete="off"
+                            placeholder="Ej: Leche, Arroz, Tomates..."
+                        >
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-quantity">Cantidad</label>
+                            <input 
+                                type="number" 
+                                id="product-quantity" 
+                                name="quantity" 
+                                min="1" 
+                                value="1"
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="product-unit">Unidad</label>
+                            <select id="product-unit" name="unit">
+                                <option value="unidad">Unidad</option>
+                                <option value="kg">Kg</option>
+                                <option value="g">Gramos</option>
+                                <option value="l">Litros</option>
+                                <option value="ml">ml</option>
+                                <option value="paquete">Paquete</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-category">Categoría</label>
+                        <select id="product-category" name="category">
+                            <option value="lacteos">🥛 Lácteos</option>
+                            <option value="carnes">🥩 Carnes</option>
+                            <option value="frutas">🍎 Frutas y Verduras</option>
+                            <option value="cereales">🌾 Cereales y Granos</option>
+                            <option value="bebidas">🥤 Bebidas</option>
+                            <option value="limpieza">🧹 Limpieza</option>
+                            <option value="otros">📦 Otros</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-expiry">Fecha de caducidad</label>
+                        <input 
+                            type="date" 
+                            id="product-expiry" 
+                            name="expiryDate"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-notes">Notas (opcional)</label>
+                        <textarea 
+                            id="product-notes" 
+                            name="notes" 
+                            rows="2"
+                            placeholder="Ej: Marca preferida, ubicación en despensa..."
+                        ></textarea>
+                    </div>
+                </div>
+                
+                <footer class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </footer>
+            </form>
+        </dialog>
+
+        <!-- Modal para lista de compras -->
+        <dialog id="modal-shopping" class="modal" aria-labelledby="modal-shopping-title">
+            <form id="form-shopping" class="modal-content">
+                <header class="modal-header">
+                    <h3 id="modal-shopping-title">Agregar a Lista</h3>
+                    <button type="button" class="btn-close" aria-label="Cerrar">&times;</button>
+                </header>
+                
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="shopping-name">Producto *</label>
+                        <input type="text" id="shopping-name" name="name" required placeholder="¿Qué necesitas comprar?">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="shopping-quantity">Cantidad</label>
+                        <input type="text" id="shopping-quantity" name="quantity" placeholder="Ej: 2, 1kg, 500ml">
+                    </div>
+                </div>
+                
+                <footer class="modal-footer">
+                    <button type="button" class="btn-secondary btn-close-shopping">Cancelar</button>
+                    <button type="submit" class="btn-primary">Agregar</button>
+                </footer>
+            </form>
+        </dialog>
+
+        <!-- Toast para notificaciones in-app -->
+        <div id="toast" class="toast" role="alert" aria-live="polite" hidden>
+            <span id="toast-message"></span>
+        </div>
+    </div>
+
+    <!-- Scripts (al final para no bloquear renderizado) -->
+    <script src="src/js/db.js" type="module"></script>
+    <script src="src/js/notifications.js" type="module"></script>
+    <script src="src/js/utils.js" type="module"></script>
+    <script src="src/js/app.js" type="module"></script>
+    
+    <!-- Registro del Service Worker -->
+    <script>
+        // Registrar SW solo si el navegador lo soporta
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    console.log('SW registrado:', registration.scope);
+                } catch (error) {
+                    console.error('Error al registrar SW:', error);
+                }
+            });
+        }
+    </script>
+</body>
 </html>
