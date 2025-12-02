@@ -1,13 +1,8 @@
-/* ===========================================
-   SW.JS - Service Worker
-   Caché y soporte offline
-   =========================================== */
-
 const CACHE_NAME = 'despensa-v1';
 const STATIC_CACHE = 'despensa-static-v1';
 const DYNAMIC_CACHE = 'despensa-dynamic-v1';
 
-// Archivos a cachear inmediatamente (App Shell)
+// App Shell
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -23,13 +18,9 @@ const STATIC_ASSETS = [
     '/src/assets/icons/icon-512x512.png'
 ];
 
-// Página offline de respaldo
 const OFFLINE_PAGE = '/index.html';
 
-/* ===========================================
-   INSTALACIÓN
-   =========================================== */
-
+// Instalar SW
 self.addEventListener('install', (event) => {
     console.log('[SW] Instalando Service Worker...');
     
@@ -40,7 +31,6 @@ self.addEventListener('install', (event) => {
                 return cache.addAll(STATIC_ASSETS);
             })
             .then(() => {
-                // Activar inmediatamente sin esperar
                 return self.skipWaiting();
             })
             .catch((error) => {
@@ -49,45 +39,32 @@ self.addEventListener('install', (event) => {
     );
 });
 
-/* ===========================================
-   ACTIVACIÓN
-   =========================================== */
-
+// Activar SW
 self.addEventListener('activate', (event) => {
-    console.log('[SW] Activando Service Worker...');
+    console.log('Activando sw');
     
     event.waitUntil(
-        // Limpiar cachés antiguos
         caches.keys()
             .then((cacheNames) => {
                 return Promise.all(
                     cacheNames
                         .filter((name) => {
-                            // Eliminar cachés que no sean las actuales
                             return name !== STATIC_CACHE && 
                                    name !== DYNAMIC_CACHE;
                         })
                         .map((name) => {
-                            console.log('[SW] Eliminando caché antigua:', name);
+                            console.log('Eliminando caché antigua:', name);
                             return caches.delete(name);
                         })
                 );
             })
             .then(() => {
-                // Tomar control de todas las páginas abiertas
                 return self.clients.claim();
             })
     );
 });
 
-/* ===========================================
-   ESTRATEGIAS DE CACHÉ
-   =========================================== */
-
-/**
- * Cache First - para assets estáticos
- * Busca en caché primero, si no encuentra, va a red
- */
+// Cache First
 async function cacheFirst(request) {
     const cachedResponse = await caches.match(request);
     
@@ -98,7 +75,6 @@ async function cacheFirst(request) {
     try {
         const networkResponse = await fetch(request);
         
-        // Guardar en caché dinámica
         if (networkResponse.ok) {
             const cache = await caches.open(DYNAMIC_CACHE);
             cache.put(request, networkResponse.clone());
@@ -106,20 +82,15 @@ async function cacheFirst(request) {
         
         return networkResponse;
     } catch (error) {
-        // Si falla la red, devolver página offline
         return caches.match(OFFLINE_PAGE);
     }
 }
 
-/**
- * Network First - para contenido dinámico
- * Intenta red primero, si falla usa caché
- */
+// Network First
 async function networkFirst(request) {
     try {
         const networkResponse = await fetch(request);
         
-        // Actualizar caché
         if (networkResponse.ok) {
             const cache = await caches.open(DYNAMIC_CACHE);
             cache.put(request, networkResponse.clone());
@@ -133,20 +104,15 @@ async function networkFirst(request) {
             return cachedResponse;
         }
         
-        // Página offline como último recurso
         return caches.match(OFFLINE_PAGE);
     }
 }
 
-/**
- * Stale While Revalidate - mejor UX
- * Devuelve caché inmediatamente mientras actualiza en segundo plano
- */
+// Stale While Revalidate
 async function staleWhileRevalidate(request) {
     const cache = await caches.open(DYNAMIC_CACHE);
     const cachedResponse = await cache.match(request);
     
-    // Actualizar en segundo plano
     const fetchPromise = fetch(request)
         .then((networkResponse) => {
             if (networkResponse.ok) {
@@ -156,60 +122,41 @@ async function staleWhileRevalidate(request) {
         })
         .catch(() => cachedResponse);
     
-    // Devolver caché inmediatamente o esperar red
     return cachedResponse || fetchPromise;
 }
 
-/* ===========================================
-   INTERCEPCIÓN DE REQUESTS
-   =========================================== */
-
+// Interceptar requests
 self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
     
-    // Solo manejar requests del mismo origen
     if (url.origin !== location.origin) {
         return;
     }
     
-    // Ignorar requests que no sean GET
     if (request.method !== 'GET') {
         return;
     }
 
-    // Estrategia según tipo de recurso
     if (isStaticAsset(url.pathname)) {
-        // Assets estáticos: Cache First
         event.respondWith(cacheFirst(request));
     } else if (isHTMLPage(url.pathname)) {
-        // Páginas HTML: Stale While Revalidate
         event.respondWith(staleWhileRevalidate(request));
     } else {
-        // Resto: Network First
         event.respondWith(networkFirst(request));
     }
 });
 
-/**
- * Verifica si es un asset estático
- */
 function isStaticAsset(pathname) {
     const staticExtensions = ['.css', '.js', '.png', '.jpg', '.jpeg', '.webp', '.svg', '.ico', '.woff', '.woff2'];
     return staticExtensions.some(ext => pathname.endsWith(ext));
 }
 
-/**
- * Verifica si es una página HTML
- */
 function isHTMLPage(pathname) {
     return pathname.endsWith('.html') || pathname === '/';
 }
 
-/* ===========================================
-   PUSH NOTIFICATIONS
-   =========================================== */
-
+// Push Notifications
 self.addEventListener('push', (event) => {
     console.log('[SW] Push recibido');
     
@@ -219,7 +166,6 @@ self.addEventListener('push', (event) => {
         icon: '/src/assets/icons/icon-192x192.png'
     };
     
-    // Intentar parsear datos del push
     if (event.data) {
         try {
             data = { ...data, ...event.data.json() };
@@ -247,9 +193,7 @@ self.addEventListener('push', (event) => {
     );
 });
 
-/**
- * Click en notificación
- */
+// Click en notificación
 self.addEventListener('notificationclick', (event) => {
     console.log('[SW] Click en notificación');
     
@@ -259,46 +203,35 @@ self.addEventListener('notificationclick', (event) => {
         return;
     }
     
-    // Abrir o enfocar la app
     const url = event.notification.data?.url || '/';
     
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true })
             .then((windowClients) => {
-                // Si ya hay una ventana abierta, enfocarla
                 for (const client of windowClients) {
                     if (client.url.includes(self.location.origin) && 'focus' in client) {
                         return client.focus();
                     }
                 }
-                // Si no, abrir nueva ventana
                 return clients.openWindow(url);
             })
     );
 });
 
-/* ===========================================
-   BACKGROUND SYNC (futuro)
-   =========================================== */
-
+// Background Sync
 self.addEventListener('sync', (event) => {
     console.log('[SW] Background Sync:', event.tag);
     
     if (event.tag === 'sync-products') {
-        // Sincronizar productos cuando vuelva la conexión
         event.waitUntil(syncProducts());
     }
 });
 
 async function syncProducts() {
-    // Implementar sincronización con servidor si es necesario
     console.log('[SW] Sincronizando productos...');
 }
 
-/* ===========================================
-   MENSAJES DESDE LA APP
-   =========================================== */
-
+// Mensajes desde la app
 self.addEventListener('message', (event) => {
     console.log('[SW] Mensaje recibido:', event.data);
     
