@@ -1,17 +1,11 @@
-/* ===========================================
-   NOTIFICATIONS.JS - Notificaciones Push
-   Alertas de caducidad de productos
-   =========================================== */
 
 import { getExpiringProducts, getExpiredProducts } from './db.js';
 
-// Clave para localStorage (guardar preferencias)
+
 const NOTIFICATION_KEY = 'despensa_notifications_enabled';
 const LAST_CHECK_KEY = 'despensa_last_notification_check';
 
-/**
- * Verifica si las notificaciones están soportadas
- */
+
 export function isNotificationSupported() {
     return 'Notification' in window;
 }
@@ -50,17 +44,13 @@ export async function requestNotificationPermission() {
     }
 }
 
-/**
- * Verifica si las notificaciones están habilitadas
- */
+
 export function areNotificationsEnabled() {
     return localStorage.getItem(NOTIFICATION_KEY) === 'true' 
            && getNotificationPermission() === 'granted';
 }
 
-/**
- * Desactiva las notificaciones (solo la preferencia local)
- */
+
 export function disableNotifications() {
     localStorage.setItem(NOTIFICATION_KEY, 'false');
 }
@@ -82,19 +72,19 @@ export function showNotification(title, options = {}) {
         vibrate: [100, 50, 100],
         requireInteraction: false,
         silent: false,
-        tag: 'despensa-notification', // Agrupa notificaciones similares
+        tag: 'despensa-notification', 
         ...options
     };
 
     try {
         const notification = new Notification(title, defaultOptions);
 
-        // Manejar click en la notificación
+        
         notification.onclick = () => {
             window.focus();
             notification.close();
             
-            // Ir a la pestaña de caducidad
+            
             if (options.onClick) {
                 options.onClick();
             }
@@ -107,14 +97,11 @@ export function showNotification(title, options = {}) {
     }
 }
 
-/**
- * Verifica productos y envía alertas
- * Se ejecuta una vez al día como máximo
- */
+
 export async function checkExpiryAlerts() {
     if (!areNotificationsEnabled()) return;
 
-    // Verificar si ya se hizo check hoy
+    
     const lastCheck = localStorage.getItem(LAST_CHECK_KEY);
     const today = new Date().toDateString();
     
@@ -124,11 +111,11 @@ export async function checkExpiryAlerts() {
     }
 
     try {
-        // Obtener productos caducados y próximos a caducar
+        
         const expired = await getExpiredProducts();
-        const expiringSoon = await getExpiringProducts(3); // Próximos 3 días
+        const expiringSoon = await getExpiringProducts(3); 
 
-        // Notificar productos caducados
+       
         if (expired.length > 0) {
             showNotification('⚠️ Productos caducados', {
                 body: `Tienes ${expired.length} producto(s) caducado(s) en tu despensa`,
@@ -152,7 +139,7 @@ export async function checkExpiryAlerts() {
             });
         }
 
-        // Guardar fecha del último check
+        
         localStorage.setItem(LAST_CHECK_KEY, today);
         
     } catch (error) {
@@ -160,28 +147,23 @@ export async function checkExpiryAlerts() {
     }
 }
 
-/**
- * Programa verificación periódica de caducidad
- * Usa el Page Visibility API para ahorrar recursos
- */
+
 export function scheduleExpiryChecks() {
-    // Verificar al cargar la app
+    
     checkExpiryAlerts();
 
-    // Verificar cuando la página vuelve a ser visible
+    
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
             checkExpiryAlerts();
         }
     });
 
-    // También verificar cada hora si la app está abierta
+    
     setInterval(checkExpiryAlerts, 60 * 60 * 1000);
 }
 
-/**
- * Envía notificación de prueba
- */
+
 export function sendTestNotification() {
     return showNotification('🔔 Notificaciones activas', {
         body: 'Recibirás alertas cuando tus productos estén por caducar',
@@ -189,9 +171,7 @@ export function sendTestNotification() {
     });
 }
 
-/**
- * Obtiene resumen de alertas pendientes
- */
+
 export async function getAlertsSummary() {
     try {
         const expired = await getExpiredProducts();

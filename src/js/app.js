@@ -1,8 +1,3 @@
-/* ===========================================
-   APP.JS - Punto de entrada principal
-   Manejo de UI, eventos y estado
-   =========================================== */
-
 import { 
     initDB, 
     getAllProducts, 
@@ -38,9 +33,6 @@ import {
     getNotificationPermission
 } from './notifications.js';
 
-/* ===========================================
-   ESTADO DE LA APLICACIÓN
-   =========================================== */
 
 let state = {
     products: [],
@@ -50,9 +42,7 @@ let state = {
     expiryFilter: 'all'
 };
 
-/* ===========================================
-   ELEMENTOS DEL DOM
-   =========================================== */
+
 
 const elements = {
     loadingScreen: null,
@@ -69,37 +59,31 @@ const elements = {
     btnInstall: null
 };
 
-// Evento de instalación PWA
+
 let deferredPrompt = null;
 
-/* ===========================================
-   INICIALIZACIÓN
-   =========================================== */
 
-/**
- * Inicializa la aplicación
- */
 async function init() {
     try {
-        // Cachear elementos del DOM
+        
         cacheElements();
         
-        // Inicializar IndexedDB
+        
         await initDB();
         
-        // Cargar datos iniciales
+        
         await loadData();
         
-        // Configurar eventos
+        
         setupEventListeners();
         
-        // Configurar notificaciones
+        
         scheduleExpiryChecks();
         
-        // Ocultar pantalla de carga
+        
         hideLoadingScreen();
         
-        // Verificar parámetros de URL (shortcuts)
+        
         handleURLParams();
         
         console.log('App inicializada correctamente');
@@ -110,9 +94,7 @@ async function init() {
     }
 }
 
-/**
- * Cachea referencias a elementos del DOM
- */
+
 function cacheElements() {
     elements.loadingScreen = document.getElementById('loading-screen');
     elements.navTabs = document.querySelectorAll('.nav-tab');
@@ -128,9 +110,7 @@ function cacheElements() {
     elements.btnInstall = document.getElementById('btn-install');
 }
 
-/**
- * Oculta la pantalla de carga
- */
+
 function hideLoadingScreen() {
     if (elements.loadingScreen) {
         elements.loadingScreen.classList.add('hidden');
@@ -140,9 +120,7 @@ function hideLoadingScreen() {
     }
 }
 
-/**
- * Carga datos desde IndexedDB
- */
+
 async function loadData() {
     state.products = await getAllProducts();
     state.shoppingList = await getShoppingList();
@@ -152,38 +130,36 @@ async function loadData() {
     renderExpiryList();
 }
 
-/* ===========================================
-   EVENT LISTENERS
-   =========================================== */
+
 
 function setupEventListeners() {
-    // Navegación por tabs
+    
     elements.navTabs.forEach(tab => {
         tab.addEventListener('click', () => switchTab(tab.dataset.tab));
     });
 
-    // Búsqueda con debounce
+    
     elements.searchInput?.addEventListener('input', 
         debounce((e) => handleSearch(e.target.value), 300)
     );
 
-    // Botón agregar producto
+    
     document.getElementById('btn-add-product')?.addEventListener('click', () => {
         openProductModal();
     });
 
-    // Botón agregar a compras
+    
     document.getElementById('btn-add-shopping')?.addEventListener('click', () => {
         openShoppingModal();
     });
 
-    // Formulario de producto
+    
     elements.formProduct?.addEventListener('submit', handleProductSubmit);
 
-    // Formulario de compras
+    
     elements.formShopping?.addEventListener('submit', handleShoppingSubmit);
 
-    // Cerrar modales
+    
     document.querySelectorAll('.btn-close, #btn-cancel').forEach(btn => {
         btn.addEventListener('click', closeModals);
     });
@@ -192,7 +168,7 @@ function setupEventListeners() {
         elements.modalShopping?.close();
     });
 
-    // Cerrar modal al hacer click fuera
+    
     elements.modalProduct?.addEventListener('click', (e) => {
         if (e.target === elements.modalProduct) closeModals();
     });
@@ -201,7 +177,7 @@ function setupEventListeners() {
         if (e.target === elements.modalShopping) elements.modalShopping.close();
     });
 
-    // Filtros de caducidad
+    
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -211,13 +187,13 @@ function setupEventListeners() {
         });
     });
 
-    // Limpiar comprados
+    
     document.getElementById('btn-clear-bought')?.addEventListener('click', handleClearBought);
 
-    // Activar notificaciones
+    
     document.getElementById('btn-enable-notifications')?.addEventListener('click', handleEnableNotifications);
 
-    // Instalación PWA
+    
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
@@ -226,26 +202,24 @@ function setupEventListeners() {
 
     elements.btnInstall?.addEventListener('click', handleInstall);
 
-    // Click en listas (delegación de eventos)
+    
     elements.inventoryList?.addEventListener('click', handleInventoryClick);
     elements.shoppingListEl?.addEventListener('click', handleShoppingClick);
     elements.expiryList?.addEventListener('click', handleInventoryClick);
 }
 
-/* ===========================================
-   NAVEGACIÓN
-   =========================================== */
+
 
 function switchTab(tabName) {
     state.currentTab = tabName;
 
-    // Actualizar tabs activos
+    
     elements.navTabs.forEach(tab => {
         tab.classList.toggle('active', tab.dataset.tab === tabName);
         tab.setAttribute('aria-selected', tab.dataset.tab === tabName);
     });
 
-    // Mostrar contenido correspondiente
+    
     elements.tabContents.forEach(content => {
         const isActive = content.id === tabName;
         content.classList.toggle('active', isActive);
@@ -255,13 +229,6 @@ function switchTab(tabName) {
     vibrate(30);
 }
 
-/* ===========================================
-   RENDERIZADO
-   =========================================== */
-
-/**
- * Renderiza la lista de inventario
- */
 function renderInventory(products = state.products) {
     if (!elements.inventoryList) return;
 
@@ -281,9 +248,7 @@ function renderInventory(products = state.products) {
     ).join('');
 }
 
-/**
- * Renderiza la lista de compras
- */
+
 function renderShoppingList() {
     if (!elements.shoppingListEl) return;
 
@@ -298,7 +263,7 @@ function renderShoppingList() {
         return;
     }
 
-    // Ordenar: no comprados primero
+    
     const sorted = [...state.shoppingList].sort((a, b) => a.bought - b.bought);
 
     elements.shoppingListEl.innerHTML = sorted.map(item => `
@@ -318,19 +283,17 @@ function renderShoppingList() {
     `).join('');
 }
 
-/**
- * Renderiza la lista de caducidad
- */
+
 function renderExpiryList() {
     if (!elements.expiryList) return;
 
-    // Filtrar productos con fecha de caducidad
+    
     let products = state.products.filter(p => p.expiryDate);
     
-    // Aplicar filtro de estado
+    
     products = filterByExpiryStatus(products, state.expiryFilter);
     
-    // Ordenar por fecha (más próximos primero)
+    
     products = sortByExpiry(products, 'asc');
 
     if (products.length === 0) {
@@ -349,9 +312,7 @@ function renderExpiryList() {
     ).join('');
 }
 
-/**
- * Crea el HTML de una tarjeta de producto
- */
+
 function createProductCard(product, showExpiry = false) {
     const icon = getCategoryIcon(product.category);
     const expiryStatus = getExpiryStatus(product.expiryDate);
@@ -383,13 +344,7 @@ function createProductCard(product, showExpiry = false) {
     `;
 }
 
-/* ===========================================
-   MANEJO DE EVENTOS
-   =========================================== */
 
-/**
- * Búsqueda de productos
- */
 async function handleSearch(query) {
     if (!query.trim()) {
         renderInventory();
@@ -400,9 +355,7 @@ async function handleSearch(query) {
     renderInventory(results);
 }
 
-/**
- * Click en lista de inventario (delegación)
- */
+
 async function handleInventoryClick(e) {
     const card = e.target.closest('.product-card');
     if (!card) return;
@@ -417,16 +370,14 @@ async function handleInventoryClick(e) {
     }
 }
 
-/**
- * Click en lista de compras (delegación)
- */
+
 async function handleShoppingClick(e) {
     const item = e.target.closest('.shopping-item');
     if (!item) return;
     
     const id = parseInt(item.dataset.id);
 
-    // Checkbox toggle
+    
     if (e.target.classList.contains('shopping-item__checkbox')) {
         await toggleShoppingItem(id, e.target.checked);
         state.shoppingList = await getShoppingList();
@@ -435,7 +386,7 @@ async function handleShoppingClick(e) {
         return;
     }
 
-    // Eliminar
+    
     if (e.target.closest('[data-action="delete"]')) {
         await deleteShoppingItem(id);
         state.shoppingList = await getShoppingList();
@@ -445,9 +396,7 @@ async function handleShoppingClick(e) {
     }
 }
 
-/**
- * Eliminar producto
- */
+
 async function handleDeleteProduct(id) {
     if (!confirm('¿Eliminar este producto?')) return;
 
@@ -464,9 +413,7 @@ async function handleDeleteProduct(id) {
     }
 }
 
-/**
- * Envío del formulario de producto
- */
+
 async function handleProductSubmit(e) {
     e.preventDefault();
     
@@ -481,7 +428,7 @@ async function handleProductSubmit(e) {
         notes: formData.get('notes')?.trim() || ''
     };
 
-    // Validación básica
+    
     if (!productData.name) {
         showToast('Ingresa el nombre del producto');
         return;
@@ -489,17 +436,17 @@ async function handleProductSubmit(e) {
 
     try {
         if (state.editingProductId) {
-            // Actualizar producto existente
+            
             productData.id = state.editingProductId;
             await updateProduct(productData);
             showToast('Producto actualizado');
         } else {
-            // Agregar nuevo producto
+            
             await addProduct(productData);
             showToast('Producto agregado');
         }
 
-        // Recargar datos y cerrar modal
+        
         state.products = await getAllProducts();
         renderInventory();
         renderExpiryList();
@@ -512,9 +459,7 @@ async function handleProductSubmit(e) {
     }
 }
 
-/**
- * Envío del formulario de compras
- */
+
 async function handleShoppingSubmit(e) {
     e.preventDefault();
     
@@ -544,9 +489,7 @@ async function handleShoppingSubmit(e) {
     }
 }
 
-/**
- * Limpiar items comprados
- */
+
 async function handleClearBought() {
     const boughtCount = state.shoppingList.filter(item => item.bought).length;
     
@@ -568,9 +511,7 @@ async function handleClearBought() {
     }
 }
 
-/**
- * Activar notificaciones
- */
+
 async function handleEnableNotifications() {
     const permission = await requestNotificationPermission();
     
@@ -578,7 +519,7 @@ async function handleEnableNotifications() {
         showToast('Notificaciones activadas');
         sendTestNotification();
         
-        // Actualizar botón
+        
         const btn = document.getElementById('btn-enable-notifications');
         if (btn) {
             btn.textContent = 'Alertas activas';
@@ -589,9 +530,7 @@ async function handleEnableNotifications() {
     }
 }
 
-/**
- * Instalar PWA
- */
+
 async function handleInstall() {
     if (!deferredPrompt) return;
 
@@ -606,26 +545,20 @@ async function handleInstall() {
     deferredPrompt = null;
 }
 
-/* ===========================================
-   MODALES
-   =========================================== */
 
-/**
- * Abre el modal de producto (nuevo o editar)
- */
 async function openProductModal(productId = null) {
     state.editingProductId = productId;
     
     const modalTitle = document.getElementById('modal-title');
     
     if (productId) {
-        // Modo edición
+        
         const product = state.products.find(p => p.id === productId);
         if (!product) return;
         
         modalTitle.textContent = 'Editar Producto';
         
-        // Llenar formulario
+        
         document.getElementById('product-name').value = product.name;
         document.getElementById('product-quantity').value = product.quantity;
         document.getElementById('product-unit').value = product.unit;
@@ -633,7 +566,7 @@ async function openProductModal(productId = null) {
         document.getElementById('product-expiry').value = product.expiryDate || '';
         document.getElementById('product-notes').value = product.notes || '';
     } else {
-        // Modo nuevo
+        
         modalTitle.textContent = 'Agregar Producto';
         elements.formProduct?.reset();
     }
@@ -641,50 +574,36 @@ async function openProductModal(productId = null) {
     elements.modalProduct?.showModal();
 }
 
-/**
- * Abre el modal de lista de compras
- */
+
 function openShoppingModal() {
     elements.formShopping?.reset();
     elements.modalShopping?.showModal();
 }
 
-/**
- * Cierra todos los modales
- */
+
 function closeModals() {
     elements.modalProduct?.close();
     elements.modalShopping?.close();
     state.editingProductId = null;
 }
 
-/* ===========================================
-   UTILIDADES
-   =========================================== */
 
-/**
- * Maneja parámetros de URL (shortcuts del manifest)
- */
 function handleURLParams() {
     const params = new URLSearchParams(window.location.search);
     
-    // Abrir modal si viene de shortcut "agregar"
+    
     if (params.get('action') === 'add') {
         openProductModal();
     }
     
-    // Cambiar a pestaña específica
+    
     const tab = params.get('tab');
     if (tab && ['inventario', 'compras', 'caducidad'].includes(tab)) {
         switchTab(tab);
     }
 }
 
-/* ===========================================
-   INICIAR APP
-   =========================================== */
 
-// Esperar a que el DOM esté listo
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
