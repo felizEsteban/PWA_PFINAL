@@ -1,54 +1,54 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- Metadatos básicos -->
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- SEO -->
+    
     <title>Gestor de Despensa - Control de Inventario y Caducidad</title>
     <meta name="description" content="Aplicación para gestionar tu despensa, lista de compras e inventario. Controla las fechas de caducidad y recibe alertas.">
     <meta name="keywords" content="despensa, inventario, lista compras, caducidad, gestión hogar">
     <meta name="author" content="Tu Nombre">
     <meta name="robots" content="index, follow">
     
-    <!-- Open Graph (redes sociales) -->
+    
     <meta property="og:title" content="Gestor de Despensa">
     <meta property="og:description" content="Controla tu despensa, lista de compras y fechas de caducidad">
     <meta property="og:type" content="website">
     <meta property="og:image" content="src/assets/icons/icon-512x512.png">
     
-    <!-- PWA -->
+    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2E7D32">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Despensa">
     
-    <!-- Iconos -->
+    
     <link rel="icon" type="image/png" sizes="32x32" href="src/assets/icons/icon-32x32.png">
     <link rel="apple-touch-icon" href="src/assets/icons/icon-192x192.png">
     
-    <!-- CSS -->
+    
     <link rel="stylesheet" href="src/css/variables.css">
     <link rel="stylesheet" href="src/css/main.css">
     <link rel="stylesheet" href="src/css/styles.css">
     
-    <!-- Precarga de fuentes (rendimiento) -->
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
-    <!-- Pantalla de carga inicial -->
+    
     <div id="loading-screen" class="loading-screen" aria-label="Cargando aplicación">
         <div class="spinner"></div>
-        <p>Cargando Gestor de Despensa...</p>
+        <p>Cargando...</p>
     </div>
 
-    <!-- Contenedor principal de la app -->
+    
     <div id="app" class="app-container" role="main">
         
-        <!-- Header -->
+        
         <header class="header" role="banner">
             <h1 class="header__title">CacheStock</h1>
             <button id="btn-install" class="btn-install" aria-label="Instalar aplicación" hidden>
@@ -56,7 +56,7 @@
             </button>
         </header>
 
-        <!-- Navegación por pestañas -->
+        
         <nav class="nav-tabs" role="tablist" aria-label="Secciones principales">
             <button class="nav-tab active" data-tab="inventario" role="tab" aria-selected="true">
                 Inventario
@@ -69,10 +69,10 @@
             </button>
         </nav>
 
-        <!-- Contenido principal -->
+        
         <main class="main-content">
             
-            <!-- Sección Inventario -->
+            
             <section id="inventario" class="tab-content active" role="tabpanel" aria-labelledby="tab-inventario">
                 <div class="section-header">
                     <h2>Inventario</h2>
@@ -81,7 +81,7 @@
                     </button>
                 </div>
                 
-                <!-- Buscador -->
+                
                 <div class="search-container">
                     <input 
                         type="search" 
@@ -92,13 +92,13 @@
                     >
                 </div>
                 
-                <!-- Lista de productos -->
+                
                 <div id="inventory-list" class="product-list" role="list">
-                    <!-- Se llena dinámicamente con JS -->
+                    
                 </div>
             </section>
 
-            <!-- Sección Lista de Compras -->
+            
             <section id="compras" class="tab-content" role="tabpanel" aria-labelledby="tab-compras" hidden>
                 <div class="section-header">
                     <h2>Lista de Compras</h2>
@@ -108,7 +108,7 @@
                 </div>
                 
                 <div id="shopping-list" class="shopping-list" role="list">
-                    <!-- Se llena dinámicamente -->
+                    
                 </div>
                 
                 <div class="shopping-actions">
@@ -118,7 +118,7 @@
                 </div>
             </section>
 
-            <!-- Sección Caducidad -->
+            
             <section id="caducidad" class="tab-content" role="tabpanel" aria-labelledby="tab-caducidad" hidden>
                 <div class="section-header">
                     <h2>Control de Caducidad</h2>
@@ -127,7 +127,7 @@
                     </button>
                 </div>
                 
-                <!-- Filtros de caducidad -->
+                
                 <div class="expiry-filters" role="group" aria-label="Filtrar por estado">
                     <button class="filter-btn active" data-filter="all">Todos</button>
                     <button class="filter-btn filter-danger" data-filter="expired">Caducados</button>
@@ -136,12 +136,12 @@
                 </div>
                 
                 <div id="expiry-list" class="product-list" role="list">
-                    <!-- Se llena dinámicamente -->
+                    
                 </div>
             </section>
         </main>
 
-        <!-- Modal para agregar/editar productos -->
+        
         <dialog id="modal-product" class="modal" aria-labelledby="modal-title">
             <form id="form-product" class="modal-content">
                 <header class="modal-header">
@@ -227,7 +227,7 @@
             </form>
         </dialog>
 
-        <!-- Modal para lista de compras -->
+        
         <dialog id="modal-shopping" class="modal" aria-labelledby="modal-shopping-title">
             <form id="form-shopping" class="modal-content">
                 <header class="modal-header">
@@ -254,21 +254,21 @@
             </form>
         </dialog>
 
-        <!-- Toast para notificaciones in-app -->
+        
         <div id="toast" class="toast" role="alert" aria-live="polite" hidden>
             <span id="toast-message"></span>
         </div>
     </div>
 
-    <!-- Scripts (al final para no bloquear renderizado) -->
+    
     <script src="src/js/db.js" type="module"></script>
     <script src="src/js/notifications.js" type="module"></script>
     <script src="src/js/utils.js" type="module"></script>
     <script src="src/js/app.js" type="module"></script>
     
-    <!-- Registro del Service Worker -->
+    
     <script>
-        // Registrar SW solo si el navegador lo soporta
+        
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
                 try {
