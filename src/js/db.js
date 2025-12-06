@@ -1,12 +1,8 @@
-/* ===========================================
-   DB.JS - Manejo de IndexedDB
-   Almacenamiento local persistente
-   =========================================== */
 
 const DB_NAME = 'GestorDespensaDB';
 const DB_VERSION = 1;
 
-// Stores (tablas)
+
 const STORES = {
     PRODUCTS: 'products',
     SHOPPING: 'shopping'
@@ -14,31 +10,28 @@ const STORES = {
 
 let db = null;
 
-/**
- * Inicializa la base de datos IndexedDB
- * Crea los stores si no existen
- */
+
 export async function initDB() {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-        // Se ejecuta si la DB no existe o la versión cambió
+       
         request.onupgradeneeded = (event) => {
             const database = event.target.result;
 
-            // Store de productos (inventario)
+            
             if (!database.objectStoreNames.contains(STORES.PRODUCTS)) {
                 const productStore = database.createObjectStore(STORES.PRODUCTS, {
                     keyPath: 'id',
                     autoIncrement: true
                 });
-                // Índices para búsquedas rápidas
+                
                 productStore.createIndex('name', 'name', { unique: false });
                 productStore.createIndex('category', 'category', { unique: false });
                 productStore.createIndex('expiryDate', 'expiryDate', { unique: false });
             }
 
-            // Store de lista de compras
+            
             if (!database.objectStoreNames.contains(STORES.SHOPPING)) {
                 const shoppingStore = database.createObjectStore(STORES.SHOPPING, {
                     keyPath: 'id',
@@ -71,19 +64,13 @@ function getStore(storeName, mode = 'readonly') {
     return transaction.objectStore(storeName);
 }
 
-/* ===========================================
-   OPERACIONES DE PRODUCTOS (INVENTARIO)
-   =========================================== */
 
-/**
- * Agrega un nuevo producto al inventario
- */
 export async function addProduct(product) {
     return new Promise((resolve, reject) => {
         try {
             const store = getStore(STORES.PRODUCTS, 'readwrite');
             
-            // Agregar timestamp de creación
+            
             const productData = {
                 ...product,
                 createdAt: new Date().toISOString(),
@@ -92,7 +79,7 @@ export async function addProduct(product) {
 
             const request = store.add(productData);
 
-            request.onsuccess = () => resolve(request.result); // Retorna el ID
+            request.onsuccess = () => resolve(request.result); 
             request.onerror = () => reject(request.error);
         } catch (error) {
             reject(error);
@@ -100,9 +87,7 @@ export async function addProduct(product) {
     });
 }
 
-/**
- * Obtiene todos los productos
- */
+
 export async function getAllProducts() {
     return new Promise((resolve, reject) => {
         try {
@@ -117,9 +102,7 @@ export async function getAllProducts() {
     });
 }
 
-/**
- * Obtiene un producto por ID
- */
+
 export async function getProductById(id) {
     return new Promise((resolve, reject) => {
         try {
@@ -134,9 +117,7 @@ export async function getProductById(id) {
     });
 }
 
-/**
- * Actualiza un producto existente
- */
+
 export async function updateProduct(product) {
     return new Promise((resolve, reject) => {
         try {
@@ -157,9 +138,7 @@ export async function updateProduct(product) {
     });
 }
 
-/**
- * Elimina un producto
- */
+
 export async function deleteProduct(id) {
     return new Promise((resolve, reject) => {
         try {
@@ -174,9 +153,7 @@ export async function deleteProduct(id) {
     });
 }
 
-/**
- * Busca productos por nombre
- */
+
 export async function searchProducts(query) {
     const products = await getAllProducts();
     const lowerQuery = query.toLowerCase();
@@ -186,9 +163,7 @@ export async function searchProducts(query) {
     );
 }
 
-/**
- * Obtiene productos por categoría
- */
+
 export async function getProductsByCategory(category) {
     return new Promise((resolve, reject) => {
         try {
@@ -221,9 +196,7 @@ export async function getExpiringProducts(days = 7) {
     });
 }
 
-/**
- * Obtiene productos ya caducados
- */
+
 export async function getExpiredProducts() {
     const products = await getAllProducts();
     const today = new Date();
@@ -236,13 +209,7 @@ export async function getExpiredProducts() {
     });
 }
 
-/* ===========================================
-   OPERACIONES DE LISTA DE COMPRAS
-   =========================================== */
 
-/**
- * Agrega item a lista de compras
- */
 export async function addShoppingItem(item) {
     return new Promise((resolve, reject) => {
         try {
@@ -264,9 +231,7 @@ export async function addShoppingItem(item) {
     });
 }
 
-/**
- * Obtiene toda la lista de compras
- */
+
 export async function getShoppingList() {
     return new Promise((resolve, reject) => {
         try {
@@ -281,9 +246,7 @@ export async function getShoppingList() {
     });
 }
 
-/**
- * Marca/desmarca item como comprado
- */
+
 export async function toggleShoppingItem(id, bought) {
     return new Promise((resolve, reject) => {
         try {
@@ -308,9 +271,7 @@ export async function toggleShoppingItem(id, bought) {
     });
 }
 
-/**
- * Elimina item de la lista
- */
+
 export async function deleteShoppingItem(id) {
     return new Promise((resolve, reject) => {
         try {
@@ -325,9 +286,7 @@ export async function deleteShoppingItem(id) {
     });
 }
 
-/**
- * Elimina todos los items marcados como comprados
- */
+
 export async function clearBoughtItems() {
     const items = await getShoppingList();
     const boughtItems = items.filter(item => item.bought);
@@ -337,11 +296,9 @@ export async function clearBoughtItems() {
     return Promise.all(deletePromises);
 }
 
-/**
- * Mueve item de compras a inventario
- */
+
 export async function moveToInventory(shoppingItem, productDetails) {
-    // Agregar al inventario
+    
     const product = {
         name: shoppingItem.name,
         quantity: productDetails.quantity || 1,
@@ -353,11 +310,11 @@ export async function moveToInventory(shoppingItem, productDetails) {
 
     await addProduct(product);
     
-    // Eliminar de la lista de compras
+    
     await deleteShoppingItem(shoppingItem.id);
     
     return product;
 }
 
-// Exportar stores para uso externo si es necesario
+
 export { STORES };

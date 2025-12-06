@@ -1,6 +1,4 @@
-/* ===========================================
-   UTILS.JS - Funciones auxiliares
-   =========================================== */
+
 
 /**
  * Formatea fecha a formato legible en español
@@ -99,9 +97,7 @@ export const CATEGORY_ICONS = {
     otros: '📦'
 };
 
-/**
- * Nombres legibles de categorías
- */
+
 export const CATEGORY_NAMES = {
     lacteos: 'Lácteos',
     carnes: 'Carnes',
@@ -112,17 +108,12 @@ export const CATEGORY_NAMES = {
     otros: 'Otros'
 };
 
-/**
- * Obtiene el icono de una categoría
- */
+
 export function getCategoryIcon(category) {
     return CATEGORY_ICONS[category] || CATEGORY_ICONS.otros;
 }
 
-/**
- * Genera un ID único simple
- * (IndexedDB usa autoIncrement, pero esto es útil para otros casos)
- */
+
 export function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
@@ -160,7 +151,7 @@ export function showToast(message, duration = 3000) {
     toastMessage.textContent = message;
     toast.hidden = false;
     
-    // Ocultar después del tiempo especificado
+
     setTimeout(() => {
         toast.hidden = true;
     }, duration);
@@ -209,25 +200,19 @@ export function filterByExpiryStatus(products, filter) {
     });
 }
 
-/**
- * Valida que un campo no esté vacío
- */
+
 export function isNotEmpty(value) {
     return value !== null && value !== undefined && value.toString().trim() !== '';
 }
 
-/**
- * Sanitiza texto para prevenir XSS
- */
+
 export function sanitizeHTML(str) {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
 }
 
-/**
- * Formatea cantidad con unidad
- */
+
 export function formatQuantity(quantity, unit) {
     return `${quantity} ${unit}${quantity > 1 && unit === 'unidad' ? 'es' : ''}`;
 }

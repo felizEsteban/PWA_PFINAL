@@ -2,7 +2,7 @@ const CACHE_NAME = 'despensa-v1';
 const STATIC_CACHE = 'despensa-static-v1';
 const DYNAMIC_CACHE = 'despensa-dynamic-v1';
 
-// App Shell
+
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -20,7 +20,7 @@ const STATIC_ASSETS = [
 
 const OFFLINE_PAGE = '/index.html';
 
-// Instalar SW
+
 self.addEventListener('install', (event) => {
     console.log('[SW] Instalando Service Worker...');
     
@@ -39,7 +39,7 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// Activar SW
+
 self.addEventListener('activate', (event) => {
     console.log('Activando sw');
     
@@ -64,7 +64,7 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Cache First
+
 async function cacheFirst(request) {
     const cachedResponse = await caches.match(request);
     
@@ -86,7 +86,7 @@ async function cacheFirst(request) {
     }
 }
 
-// Network First
+
 async function networkFirst(request) {
     try {
         const networkResponse = await fetch(request);
@@ -108,7 +108,7 @@ async function networkFirst(request) {
     }
 }
 
-// Stale While Revalidate
+
 async function staleWhileRevalidate(request) {
     const cache = await caches.open(DYNAMIC_CACHE);
     const cachedResponse = await cache.match(request);
@@ -125,7 +125,7 @@ async function staleWhileRevalidate(request) {
     return cachedResponse || fetchPromise;
 }
 
-// Interceptar requests
+
 self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
@@ -156,7 +156,7 @@ function isHTMLPage(pathname) {
     return pathname.endsWith('.html') || pathname === '/';
 }
 
-// Push Notifications
+
 self.addEventListener('push', (event) => {
     console.log('[SW] Push recibido');
     
@@ -193,7 +193,7 @@ self.addEventListener('push', (event) => {
     );
 });
 
-// Click en notificación
+
 self.addEventListener('notificationclick', (event) => {
     console.log('[SW] Click en notificación');
     
@@ -218,7 +218,7 @@ self.addEventListener('notificationclick', (event) => {
     );
 });
 
-// Background Sync
+
 self.addEventListener('sync', (event) => {
     console.log('[SW] Background Sync:', event.tag);
     
@@ -231,7 +231,7 @@ async function syncProducts() {
     console.log('[SW] Sincronizando productos...');
 }
 
-// Mensajes desde la app
+
 self.addEventListener('message', (event) => {
     console.log('[SW] Mensaje recibido:', event.data);
     
