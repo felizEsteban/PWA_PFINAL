@@ -24,27 +24,22 @@ npx serve .
 ## Estructura del Proyecto
 ```
 /PWA_PFINAL
-├── index.html              # Página principal
-├── manifest.json           # Configuración PWA
-├── sw.js                   # Service Worker
+├── index.html                # Página principal
+├── manifest.json             # Configuración PWA
+├── sw.js                     # Service Worker
 ├── src/
 │   ├── assets/
-│   │   ├── icons/          # Iconos PWA (72-512px)
-│   │   └── images/         # Imágenes optimizadas
-│   ├── components/         # Componentes reutilizables
+│   │   ├── icons/            # Iconos PWA (72-512px)
+│   │   └── images/           # Imágenes optimizadas
+│   ├── components/           # Componentes reutilizables
 │   ├── css/
-│   │   ├── variables.css   # Variables CSS (:root)
-│   │   ├── main.css        # Reset y base
-│   │   └── styles.css      # Estilos de componentes
+│   │   ├── variables.css     # Variables CSS (:root)
+│   │   ├── main.css          # Reset y base
+│   │   └── styles.css        # Estilos de componentes
 │   └── js/
-│       ├── app.js          # Lógica principal
-│       ├── db.js           # IndexedDB
-│       ├── notifications.js # Push notifications
-│       └── utils.js        # Funciones auxiliares
+│       ├── app.js            # Lógica principal
+│       ├── db.js             # IndexedDB
+│       ├── notifications.js  # Push notifications
+│       └── utils.js          # Funciones auxiliares
 └── README.md
 ```
-
-## Colaboradores
-
-![Contributors](https://contrib.rocks/image?repo=felizEsteban/PWA_PFINAL)
-
